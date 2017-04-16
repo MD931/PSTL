@@ -1,0 +1,51 @@
+<ion-view view-title="Question {{numero}}" hide-back-button="true" xmlns:margin-="http://www.w3.org/1999/xhtml">
+  <ion-nav-buttons></ion-nav-buttons>
+  <ion-content scroll="false" class="padding">
+
+
+    <div style="text-align: center"><ion-spinner ng-show="loading"></ion-spinner></div>
+    <div ng-hide="loading">
+        <p style="font-family: 'Noto Sans CJK JP DemiLight'; font-size: 18px; margin-top: 40px; margin-left: 10px; margin-right: 10px; margin-bottom: 40px">
+          <span style="display: inline-block">Q{{question.number}} :</span> <span style="display: inline-block">{{question.question}}</span>
+        </p>
+
+       <!-- <ion-radio ng-model="abouche" value="A">CCCCC</ion-radio>
+        <ion-radio ng-model="abouche" value="B">BBBBB</ion-radio>-->
+        <!--<div class="list list-inset" ng-repeat="test in tests">
+          <input type="radio" ng-change="changementR()" ng-model="settings.id" value="{{test.id}}">{{test.id}}</input>
+        </div>-->
+
+       <ion-radio ng-if="!question.isCheckBox" ng-repeat="response in question.responses"
+                   ng-model="formModel.response" ng-change="changementR()" value="{{response.number}}"
+                   >
+          {{response.title}}
+        </ion-radio>
+        <ion-radio ng-if="!question.isCheckBox" ng-change="changementR()"
+                   ng-model="formModel.response" value="-1">
+          Je ne sais pas
+        </ion-radio>
+
+        <ion-checkbox ng-if="question.isCheckBox" ng-repeat="response in question.responses"
+                      ng-model="formModel.responses[response.number]" ng-change="changementC()" value="{{response.number}}"
+                      >
+          {{response.title}}
+        </ion-checkbox>
+        <ion-checkbox ng-if="question.isCheckBox"
+                      ng-model="formModel.responses[-1]" ng-change="iDontKnow()" value="-1"
+        >
+          Je ne sais pas
+        </ion-checkbox>
+
+
+
+          <!--<a ng-if="!$first" ng-click="nextQuestion($index-1)" class="text-left button button-calm" style="margin-top:20px; margin-left: 20px;float: left">
+            Back
+          </a>-->
+
+          <a ng-click="validerQuestion()" class="text-right button button-calm" style="margin-top:20px; margin-right: 20px; float: right" ng-disabled="checked">
+            Valider
+          </a>
+
+    </div>
+  </ion-content>
+</ion-view>

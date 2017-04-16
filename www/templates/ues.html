@@ -1,0 +1,38 @@
+<ion-view view-title="UE's" cache-view="false">
+  <ion-content class="padding">
+    <h3>Mes UE's :</h3>
+    <div style="text-align: center"><ion-spinner ng-show="loading"></ion-spinner></div>
+
+    <div ng-hide="loading" ng-repeat="ue in my_ues" class="card">
+      <a href ui-sref="app.ue({ueId: ue.id })" class="item item-avatar item-icon-right">
+        <ionic-letter-avatar data="{{ue.name}}" charcount="2"></ionic-letter-avatar>
+
+        {{ue.name}}
+        <p>{{ue.code_ue}}</p>
+        <i class="icon ion-chevron-right"></i>
+
+      </a>
+
+    </div>
+    <div ng-if="!my_ues.length">Aucune UE inscrit.</div>
+    <ion-list>
+
+      <h3>UE's non inscrit :</h3>
+    <div ng-hide="loading" ng-repeat="ue in other_ues" class="card">
+      <a href ng-click="inscriptionAlert(ue.id)" class="item item-avatar">
+        <ionic-letter-avatar data="{{ue.name}}" charcount="2"></ionic-letter-avatar>
+
+        {{ue.name}}
+    <p>{{ue.code_ue}}</p>
+        <!--<i class="icon ion-chevron-right"></i>-->
+
+      </a>
+    </div>
+      <div ng-if="!other_ues.length">Aucune UE inscrit.</div>
+    <ion-list>
+      <!--<ion-item ng-repeat="question in questions" href="#/app/questions/{{question.id}}">
+        {{question.title}}
+      </ion-item>
+    </ion-list>-->
+  </ion-content>
+</ion-view>

@@ -1,0 +1,16 @@
+<ion-view view-title="Questions">
+  <ion-content class="padding">
+    <h3>Questions : </h3>
+    <div style="text-align: center"><ion-spinner ng-show="loading"></ion-spinner></div>
+    <div ng-hide="loading" ng-repeat="question in data" class="card">
+      <a href ui-sref="app.question({questionId: question.id})" class="item item-avatar">
+        <ionic-letter-avatar data="Q{{question.number}}" charcount="2"></ionic-letter-avatar>
+
+        <h2>{{question.title}}</h2>
+        <p>Question {{question.number}}</p>
+      </a>
+    </div>
+    <ion-list>
+  </ion-content>
+</ion-view>
+

@@ -1,0 +1,15 @@
+<ion-view view-title="Séances">
+  <ion-content class="padding">
+    <h3>Séances : </h3>
+    <div style="text-align: center"><ion-spinner ng-show="loading"></ion-spinner></div>
+    <div ng-hide="loading" ng-repeat="session in data | orderBy : 'number' " class="card">
+      <a href ui-sref="app.seance({seanceId: session.id})" class="item item-avatar">
+        <ionic-letter-avatar data="{{session.number}}"></ionic-letter-avatar>
+
+        <h2>{{session.title}}</h2>
+        <p>Seance {{session.number}}</p>
+      </a>
+    </div>
+    <ion-list>
+  </ion-content>
+</ion-view>

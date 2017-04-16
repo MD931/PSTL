@@ -1,0 +1,23 @@
+<ion-view view-title="Login" hide-back-button="true">
+  <ion-nav-buttons></ion-nav-buttons>
+  <ion-content>
+<div style="text-align:center;margin-top:50px;margin-bottom:50px"><div><img src="img/UPMC_Sorbonne_Universites.png" /></div><h3>Connexion</h3></div>
+    <div style="text-align: center"><ion-spinner ng-show="loading"></ion-spinner></div>
+    <form ng-submit="doLogin()"ng-hide="loading">
+      <div class="list list-inset" style="">
+	  <label class="item item-input item-floating-label">
+	    <span class="input-label">Username</span>
+	    <input type="text" placeholder="Username" ng-model="loginData.username">
+	  </label>
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Password</span>
+          <input type="password"  placeholder="Password" ng-model="loginData.password">
+        </label>
+
+        <label class="">
+          <div style="margin-top:20px;"><button class="button button-block button-positive" type="submit">Login</button></div>
+        </label>
+</div>
+    </form>
+  </ion-content>
+</ion-view>
