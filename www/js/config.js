@@ -3,3 +3,6 @@ app.config(function (localStorageServiceProvider) {
     .setPrefix(appName)
     .setStorageType('localStorage');
 });
+app.config(['$httpProvider', function($httpProvider) {
+  $httpProvider.defaults.timeout = 1000;
+}]);

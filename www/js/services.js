@@ -1,4 +1,5 @@
 var server = "http://ec2-54-242-216-40.compute-1.amazonaws.com/api/";
+//var server = "http://ec2-54-85-60-73.compute-1.amazonaws.com/api/";
 //var server = "http://127.0.0.1:8000/api/";
 angular.module('services', [])
 
@@ -16,7 +17,7 @@ angular.module('services', [])
         },
         inscriptionUe: function(token, id){
           data = {};
-          return $http.post(server+'ues/'+id+'/subscribe?token='+token, data);
+          return $http.post(server+'ues/'+id+'/subscribe?token='+token, data, { timeout: 1000 });
         },
         getQuestion: function(token, id){
           return $http.get(server+'questions/'+id+'/propositions?token='+token);

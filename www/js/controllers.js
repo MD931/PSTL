@@ -282,7 +282,7 @@ serviceHttp.ues(localStorageService.get(token))
   }*/
 
   $scope.validerQuestion = function() {
-
+    $scope.loading = true;
     var responses ={};
     if($scope.question.isCheckBox){
       //Checkbox
@@ -505,8 +505,12 @@ serviceHttp.ues(localStorageService.get(token))
     serviceHttp.getStats(localStorageService.get(token), $stateParams.questionId)
 
       .success(function(data, status){
-        console.log(data);
-        stats = data;
+        console.log(data)
+        $scope.question = {
+          title : data.question.title,
+          number : data.question.number,
+          propositions : data.question.propositions
+        };
 
         cols.push({id:"t", label: data.question.title, type: "string"});
         cols.push({id:"s", label: "Tour 1", type: "number"});
@@ -520,6 +524,11 @@ serviceHttp.ues(localStorageService.get(token))
         });
         $scope.myChartObject.data = {"cols":cols, "rows":rows};
         console.log(rows);
+
+        $scope.myChartObject.type = "Bar";
+        $scope.myChartObject.options = {
+          'title': 'How Much Pizza I Ate Last Night'
+        };
         $scope.loading = false;
       })
 
@@ -532,12 +541,6 @@ serviceHttp.ues(localStorageService.get(token))
         //$scope.showAlert();
         //$scope.loading = false;
       });
-
-
-
-
-
-    $scope.myChartObject.type = "Bar";
 
 /*
     $scope.myChartObject.data = {"cols": [
@@ -564,8 +567,6 @@ serviceHttp.ues(localStorageService.get(token))
       ]}
     ]};
 */
-    $scope.myChartObject.options = {
-      'title': 'How Much Pizza I Ate Last Night'
-    };
+
   })
 ;
