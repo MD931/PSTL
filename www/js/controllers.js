@@ -1,6 +1,6 @@
 var token = "token";
 
-angular.module('starter.controllers', ['services'])
+angular.module('starter.controllers', ['services', 'googlechart'])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
@@ -117,7 +117,6 @@ serviceHttp.ues(localStorageService.get(token))
 
 
 })
-
 .controller('QuestionCtrl', function($scope, $state, $stateParams, $log,$ionicSlideBoxDelegate ,$ionicSideMenuDelegate ,$ionicHistory, $ionicNavBarDelegate,
                                      serviceHttp, localStorageService, $ionicPopup) {
 
@@ -497,7 +496,76 @@ serviceHttp.ues(localStorageService.get(token))
 
   })
 
-  .controller('EnseignantCtrl', function($scope, localStorageService){
-    //Add request to ROLES TO SEE IF
+  .controller('StatsCtrl', function($scope, $stateParams, localStorageService, serviceHttp){
+
+    $scope.loading = true;
+    var cols = [];
+    var rows = [];
+    $scope.myChartObject = {};
+    serviceHttp.getStats(localStorageService.get(token), $stateParams.questionId)
+
+      .success(function(data, status){
+        console.log(data);
+        stats = data;
+
+        cols.push({id:"t", label: data.question.title, type: "string"});
+        cols.push({id:"s", label: "Tour 1", type: "number"});
+        //cols.push({id:"s", label: "Tour 2", type: "number"});
+
+        data.question.propositions.forEach(function (e) {
+          rows.push({c:[
+            {v: e.number},
+            {v: e.stat.responses_count}
+          ]})
+        });
+        $scope.myChartObject.data = {"cols":cols, "rows":rows};
+        console.log(rows);
+        $scope.loading = false;
+      })
+
+
+      .error(function (data, status){
+
+        // if(status == "401")
+        $state.go('app.logout');
+        console.log(data);
+        //$scope.showAlert();
+        //$scope.loading = false;
+      });
+
+
+
+
+
+    $scope.myChartObject.type = "Bar";
+
+/*
+    $scope.myChartObject.data = {"cols": [
+      {id: "t", label: "Topping", type: "string"},
+      {id: "s", label: "Slices", type: "number"},
+      {id: "s", label: "Essai", type: "number"}
+    ], "rows": [
+      {c: [
+        {v: "Mushrooms"},
+        {v: 3},
+        {v: 5},
+      ]},
+      {c: [
+        {v: "Olives"},
+        {v: 31}
+      ]},
+      {c: [
+        {v: "Zucchini"},
+        {v: 1},
+      ]},
+      {c: [
+        {v: "Pepperoni"},
+        {v: 2},
+      ]}
+    ]};
+*/
+    $scope.myChartObject.options = {
+      'title': 'How Much Pizza I Ate Last Night'
+    };
   })
 ;

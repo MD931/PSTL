@@ -129,13 +129,13 @@ var app = angular.module('starter', ['ionic', 'starter.controllers', 'ionic-lett
         }
       }
     })
-    .state('app.enseignant',{
+    .state('app.stats', {
       cache: activeCache,
-      url: '/test',
+      url: '/stats/:questionId',
       views: {
         'menuContent': {
-          templateUrl: 'templates/enseignant.html',
-          controller: 'EnseignantCtrl'
+          templateUrl: 'templates/stats.html',
+          controller: 'StatsCtrl'
         }
       }
     });
