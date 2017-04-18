@@ -8,7 +8,7 @@
       </p>
       <div  style="margin-left:50px; margin-bottom:50px">
         <div style="font-family: 'Noto Sans CJK JP DemiLight'; font-size: 16px;" ng-repeat="proposition in question.propositions"
-             ng-style="proposition.verdict === 1 && {'color': 'green'}">
+             ng-style="proposition.verdict === 1 && {'color': 'green'}" ng-if="proposition.number != 0">
           {{proposition.number}} - {{proposition.title}}
         </div>
       </div>

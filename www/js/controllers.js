@@ -505,8 +505,15 @@ serviceHttp.ues(localStorageService.get(token))
     serviceHttp.getStats(localStorageService.get(token), $stateParams.questionId)
 
       .success(function(data, status){
-        console.log(data)
+        serviceHttp.getRoles(localStorageService.get(token))
+          .success(function(data, status){
+            if(data.role.pivot.role_id == "2"){
+              $scope.enseignant = true;
+            }
+          });
+        console.log(data);
         $scope.question = {
+          id: data.question.id,
           title : data.question.title,
           number : data.question.number,
           propositions : data.question.propositions
@@ -517,17 +524,29 @@ serviceHttp.ues(localStorageService.get(token))
         //cols.push({id:"s", label: "Tour 2", type: "number"});
 
         data.question.propositions.forEach(function (e) {
-          rows.push({c:[
-            {v: e.number},
-            {v: e.stat.responses_count}
-          ]})
+          if(e.number == "0"){
+            rows.push({
+              c: [
+                {v: "Je ne sais pas"},
+                {v: e.stat.responses_count}
+              ]
+            })
+          }else {
+            rows.push({
+              c: [
+                {v: e.number},
+                {v: e.stat.responses_count}
+              ]
+            })
+          }
         });
+
         $scope.myChartObject.data = {"cols":cols, "rows":rows};
         console.log(rows);
 
         $scope.myChartObject.type = "Bar";
         $scope.myChartObject.options = {
-          'title': 'How Much Pizza I Ate Last Night'
+          'title': data.question.title
         };
         $scope.loading = false;
       })

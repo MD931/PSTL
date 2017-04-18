@@ -28,6 +28,9 @@ angular.module('services', [])
         getStats: function(token, id){
           return $http.get(server+'stat/question/'+id+'?token='+token);
         },
+        getRoles: function(token){
+          return $http.get(server+'user/role?token='+token);
+        },
         login: function(user, pass){
           var data = {
             username: user,
