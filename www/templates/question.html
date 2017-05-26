@@ -1,4 +1,4 @@
-<ion-view view-title="Question {{numero}}" hide-back-button="true" xmlns:margin-="http://www.w3.org/1999/xhtml">
+<ion-view view-title="Question {{question.number}}" hide-back-button="true" xmlns:margin-="http://www.w3.org/1999/xhtml">
   <ion-nav-buttons></ion-nav-buttons>
   <ion-content scroll="false" class="padding">
 
@@ -8,12 +8,6 @@
         <p style="font-family: 'Noto Sans CJK JP DemiLight'; font-size: 18px; margin-top: 40px; margin-left: 10px; margin-right: 10px; margin-bottom: 40px">
           <span style="display: inline-block">Q{{question.number}} :</span> <span style="display: inline-block">{{question.question}}</span>
         </p>
-
-       <!-- <ion-radio ng-model="abouche" value="A">CCCCC</ion-radio>
-        <ion-radio ng-model="abouche" value="B">BBBBB</ion-radio>-->
-        <!--<div class="list list-inset" ng-repeat="test in tests">
-          <input type="radio" ng-change="changementR()" ng-model="settings.id" value="{{test.id}}">{{test.id}}</input>
-        </div>-->
 
        <ion-radio ng-if="!question.isCheckBox" ng-repeat="response in question.responses"
                    ng-model="formModel.response" ng-change="changementR()" value="{{response.number}}"
@@ -36,17 +30,11 @@
           Je ne sais pas
         </ion-checkbox>
 
-
-
-          <!--<a ng-if="!$first" ng-click="nextQuestion($index-1)" class="text-left button button-calm" style="margin-top:20px; margin-left: 20px;float: left">
-            Back
-          </a>-->
-
           <a ng-click="validerQuestion()" class="text-right button button-calm" style="margin-top:20px; margin-right: 20px; float: right" ng-disabled="checked">
             Valider
           </a>
 
-      <a ui-sref="app.stats({questionId: question.id})" ng-if="enseignant" class="button button-calm" style="margin-top:20px; margin-right: 20px;">
+      <a ui-sref="app.stats({questionId: numero})" ng-if="enseignant" class="button button-calm" style="margin-top:20px; margin-right: 20px;">
         Afficher les stats
       </a>
 

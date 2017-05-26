@@ -1,4 +1,4 @@
-var server = "http://ec2-54-242-216-40.compute-1.amazonaws.com/api/";
+var server = "http://ec2-34-201-121-8.compute-1.amazonaws.com/api/";
 //var server = "http://ec2-54-85-60-73.compute-1.amazonaws.com/api/";
 //var server = "http://127.0.0.1:8000/api/";
 angular.module('services', [])

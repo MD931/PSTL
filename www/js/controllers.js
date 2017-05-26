@@ -172,6 +172,12 @@ serviceHttp.ues(localStorageService.get(token))
         $scope.loading = false;
 
       }
+      serviceHttp.getRoles(localStorageService.get(token))
+        .success(function(data, status){
+          if(data.role.pivot.role_id == "2"){
+            $scope.enseignant = true;
+          }
+        });
     })
 
     .error(function (data, status){
@@ -325,14 +331,14 @@ serviceHttp.ues(localStorageService.get(token))
 
       .success(function(data, status){
         console.log(data);
-
-        console.log($ionicHistory.viewHistory());
-        if(!($ionicHistory.viewHistory().backView == null)){
+        $scope.disableHistory();
+        $state.go('app.seance', {seanceId:$scope.session_id});
+        /*if(!($ionicHistory.viewHistory().backView == null)){
           $ionicHistory.goBack();
         }else{
           $scope.disableHistory();
           $state.go('app.seance', {seanceId:$scope.session_id});
-        }
+        }*/
 
       })
 
@@ -342,10 +348,24 @@ serviceHttp.ues(localStorageService.get(token))
         // if(status == "401")
         //$state.go('app.logout');
         console.log(data);
-        //$scope.showAlert();
+        $scope.errorSoumissionAlert();
         //$scope.loading = false;
       });
 
+    $scope.errorSoumissionAlert = function() {
+      var alertPopup = $ionicPopup.alert({
+        title: 'Alerte',
+        template: 'Erreur lors de la soumission des réponses.'
+      });
+
+      alertPopup.then(function(res) {
+        console.log($scope.session_id);
+        if($ionicHistory.viewHistory().backView == null){
+          $scope.disableHistory();
+        }
+        $state.go('app.seance', {seanceId:$scope.session_id});
+      });
+    };
     //console.log($scope.formModel);
     //$state.go('app.resultats');
 
@@ -560,32 +580,4 @@ serviceHttp.ues(localStorageService.get(token))
         //$scope.showAlert();
         //$scope.loading = false;
       });
-
-/*
-    $scope.myChartObject.data = {"cols": [
-      {id: "t", label: "Topping", type: "string"},
-      {id: "s", label: "Slices", type: "number"},
-      {id: "s", label: "Essai", type: "number"}
-    ], "rows": [
-      {c: [
-        {v: "Mushrooms"},
-        {v: 3},
-        {v: 5},
-      ]},
-      {c: [
-        {v: "Olives"},
-        {v: 31}
-      ]},
-      {c: [
-        {v: "Zucchini"},
-        {v: 1},
-      ]},
-      {c: [
-        {v: "Pepperoni"},
-        {v: 2},
-      ]}
-    ]};
-*/
-
-  })
-;
+  });
