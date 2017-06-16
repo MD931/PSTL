@@ -1,10 +1,8 @@
-// Ionic Starter App
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'starter.controllers' is found in controllers.js
+//Désactiver le cache
 var activeCache = false;
+
+//Nom de l'app
 var appName = "clickeur";
 
 
@@ -27,9 +25,12 @@ var app = angular.module('starter', ['ionic', 'starter.controllers', 'ionic-lett
   });
 })
 
+
+  //Définition des routes
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
 
+    //Menu latéral
     .state('app', {
       cache: activeCache,
     url: '/app',
@@ -38,25 +39,7 @@ var app = angular.module('starter', ['ionic', 'starter.controllers', 'ionic-lett
     controller: 'AppCtrl'
   })
 
-  .state('app.search', {
-    cache: activeCache,
-    url: '/search',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/search.html'
-      }
-    }
-  })
-
-  .state('app.browse', {
-    cache: activeCache,
-      url: '/browse',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/browse.html'
-        }
-      }
-    })
+    //Route pour l'affichage des UE's
     .state('app.ues', {
       cache: activeCache,
       url: '/ues',
@@ -67,6 +50,8 @@ var app = angular.module('starter', ['ionic', 'starter.controllers', 'ionic-lett
         }
       }
     })
+
+    //affichage des séances d'une UE
     .state('app.ue', {
       cache: true,
       url: '/ues/:ueId',
@@ -78,6 +63,7 @@ var app = angular.module('starter', ['ionic', 'starter.controllers', 'ionic-lett
       }
     })
 
+    //affichage des questions d'une séances
     .state('app.seance', {
       cache: true,
       url: '/seances/:seanceId',
@@ -89,6 +75,7 @@ var app = angular.module('starter', ['ionic', 'starter.controllers', 'ionic-lett
       }
     })
 
+    //affichage des proposition de la question
   .state('app.question', {
     cache: activeCache,
     url: '/questions/:questionId',
@@ -99,16 +86,8 @@ var app = angular.module('starter', ['ionic', 'starter.controllers', 'ionic-lett
       }
     }
   })
-    .state('app.resultats',{
-    cache:activeCache,
-    url: '/resultats/:questionsId',
-    views: {
-      'menuContent' : {
-        templateUrl : 'templates/resultats.html',
-        controller: 'ResultatCtrl'
-      }
-    }
-  })
+
+    //Page de connexion
     .state('app.login', {
       cache: activeCache,
       url: '/login',
@@ -120,6 +99,7 @@ var app = angular.module('starter', ['ionic', 'starter.controllers', 'ionic-lett
       }
     })
 
+    //Déconnexion
     .state('app.logout', {
       cache: activeCache,
       url: '/logout',
@@ -129,6 +109,8 @@ var app = angular.module('starter', ['ionic', 'starter.controllers', 'ionic-lett
         }
       }
     })
+
+    //Affichage des statistiques
     .state('app.stats', {
       cache: activeCache,
       url: '/stats/:questionId',
@@ -139,5 +121,7 @@ var app = angular.module('starter', ['ionic', 'starter.controllers', 'ionic-lett
         }
       }
     });
+
+  //Si aucune route on redirige vers la page de connexion
   $urlRouterProvider.otherwise('/app/login');
 });

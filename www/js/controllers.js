@@ -4,15 +4,6 @@ angular.module('starter.controllers', ['services', 'googlechart'])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-
-  // Form data for the login modal
   $scope.loginData = {};
 
   // Create the login modal that we will use later
@@ -35,35 +26,39 @@ angular.module('starter.controllers', ['services', 'googlechart'])
 
 })
 
+  //Liste des UE's
 .controller('UesCtrl', function($scope, $state, $ionicPopup, serviceHttp, $window,localStorageService,  $ionicSlideBoxDelegate) {
 
-
-  //$ionicSlideBoxDelegate.enableSlide(true);
+  //Si le token n'existe pas on redirige vers la page de login
 if(localStorageService.get(token) == null) {
   $state.go('app.login');
 }
-
+  //Chargement pour afficher l'icone de chargement
   $scope.loading = true;
 
+//Récuperation des UE's
 serviceHttp.ues(localStorageService.get(token))
 
     .success(function(data, status){
       console.log(data);
+
+      //Les UE's auxquelle l'étudiant est inscrit
       $scope.my_ues = data.my_ues;
+
+      //Les UE's auxquelle il est pas inscrit
       $scope.other_ues = data.other_ues;
+
+      //On mets le loading à false
       $scope.loading = false;
     })
 
 
     .error(function (data, status){
-      //if(status == "401") {
       $state.go('app.logout');
-      //}
       console.log(data);
-      //$scope.showAlert();
-      //$scope.loading = false;
     });
 
+    //Alerte à lancer si l'étudiant veut s'inscrire à une UE
     $scope.inscriptionAlert = function(id) {
       var alertPopup = $ionicPopup.confirm({
         title: 'Inscription',
@@ -84,22 +79,26 @@ serviceHttp.ues(localStorageService.get(token))
         ]
       });
 
+      //Alerte à afficher si l'inscription à l'UE a échoué
+      $scope.inscriptionError = function() {
+        var alertPopup = $ionicPopup.alert({
+          title: 'Inscription',
+          template: 'Erreur'
+        });
+      };
+
+      //D'après le choix de l'étudiant si il veut s'incrire à l'UE ou pas
       alertPopup.then(function(res){
         if(res) {
           serviceHttp.inscriptionUe(localStorageService.get(token), id)
             .success(function(data, status){
-              console.log("dataaaaa"+data);
-              //$state.go('app.ues', null, {reload:true, inherit:false});
+              //Si il s'inscrit on raffraichit la page
               $window.location.reload();
-              //$window.location.reload(true);
-              //$state.reload();
-
             })
 
-
+            //Si y'a une erreur lors de l'inscription on affiche une alerte
             .error(function (data, status){
               $scope.inscriptionError();
-              console.log(data);
             });
 
         }
@@ -108,24 +107,12 @@ serviceHttp.ues(localStorageService.get(token))
 
     };
 
-  $scope.inscriptionError = function() {
-    var alertPopup = $ionicPopup.alert({
-      title: 'Inscription',
-      template: 'Erreur'
-    });
-  };
-
 
 })
+
+//Affichage de la question
 .controller('QuestionCtrl', function($scope, $state, $stateParams, $log,$ionicSlideBoxDelegate ,$ionicSideMenuDelegate ,$ionicHistory, $ionicNavBarDelegate,
                                      serviceHttp, localStorageService, $ionicPopup) {
-
-  //Désactiver le slide menu gauche
-  //$scope.disableSwipe = function() {
-    //$ionicSlideBoxDelegate.enableSlide(true);
-  //};*/
-
-  //$ionicSideMenuDelegate.canDragContent(true);
 
   //Désactiver le bouton retour arrière
   $scope.disableHistory = function(){
@@ -137,41 +124,47 @@ serviceHttp.ues(localStorageService.get(token))
   if(localStorageService.get(token) == null) {
     $state.go('app.login');
   }
-
-
-
-
   $scope.loading = true;
-  var isOpen;
-  serviceHttp.getQuestion(localStorageService.get(token), $stateParams.questionId)
 
+  // Variable pour voir si la question est ouverte ou non
+  var isOpen;
+
+  //Récupération de la question à partir du serveur
+  serviceHttp.getQuestion(localStorageService.get(token), $stateParams.questionId)
     .success(function(data, status){
-      console.log(data);
+
+
       isOpen = data.question.opened;
       $scope.session_id = data.question.session_id;
+
+      //Si la question n'est pas ouverte on affiche une alerte
       if(isOpen == "0" ){
         $scope.showAlert();
       } else {
-
         $scope.question = {
           number: data.question.number,
           question: data.question.title,
           isCheckBox: false,
           responses: []
         };
+
+        //============== Voir le nombre de propositions correctes pour afficher une checkbox ou radio
         var i = 0;
         data.question.propositions.forEach(function (e) {
           if (e.verdict == 1)
             i++;
           $scope.question.responses.push(e);
         });
-
         if (i > 1)
           $scope.question.isCheckBox = true;
+        //============== Fin
 
         $scope.loading = false;
 
       }
+
+      //Récuperation du role de l'utilisateur, si c'est un enseignant
+      //afficher un bouton pour voir les statistiques
       serviceHttp.getRoles(localStorageService.get(token))
         .success(function(data, status){
           if(data.role.pivot.role_id == "2"){
@@ -179,18 +172,18 @@ serviceHttp.ues(localStorageService.get(token))
           }
         });
     })
-
     .error(function (data, status){
-      //$state.go('app.logout');
       console.log(data);
     });
 
+    //Alerte si une question n'est pas ouverte
     $scope.showAlert = function() {
       var alertPopup = $ionicPopup.alert({
         title: 'Alerte',
         template: 'Question pas encore ouverte'
       });
 
+      //On redirige l'utilisateur vers la séance si la question n'est pas ouverte
       alertPopup.then(function(res) {
         console.log($scope.session_id);
         if($ionicHistory.viewHistory().backView == null){
@@ -200,33 +193,26 @@ serviceHttp.ues(localStorageService.get(token))
       });
     };
 
-
+    //Tableau ou on enregistre la réponses des étudiants
   $scope.formModel = [
     responses = []
   ];
 
-
+  //Variable qui controle si au moins une réponse a été selectionné
+  //pour l'affichage du bouton Valider
   $scope.checked=true;
 
-
+  //Pour la radio dés qu'une réponse est selectionnée, elle peut plus être déselectionné
   $scope.changementR = function(){
     $scope.checked = false;
-    console.log($scope.formModel);
   };
 
+  //Pour les checkbox
   $scope.changementC = function(){
-
-    //if($scope.formModel.reponses.length != 0)
-    /*$scope.formModel.responses.forEach(function(e){
-      console.log(e);
-
-    });*/
-
-    console.log($scope.formModel);
     var i = 0;
+    //Voir le nombre de réponses sélectionné
     Object.keys($scope.formModel.responses).forEach(function(key,index) {
 
-      //console.log($scope.formModel.responses[key]);
       if($scope.formModel.responses[key] == true){
         if(key == -1){
           $scope.formModel.responses[key] = false;
@@ -235,18 +221,17 @@ serviceHttp.ues(localStorageService.get(token))
       }
 
     });
-    //console.log(i);
-    //i = 0;
+
+    //Si le nombre de réponse est supérieur à 0 on affiche le bouton Valider
     if(i>0)
       $scope.checked = false;
     else
       $scope.checked = true;
-    //console.log($scope.formModel.responses);
   };
 
+  // Traitement lorsqu'un utilisateur clique sur "Je ne sais pas"
+  // Décocher les autres réponses
   $scope.iDontKnow = function(){
-
-    console.log($scope.formModel);
     var i = 0;
     if($scope.formModel.responses[-1] == true){
         i = i+1;
@@ -256,45 +241,29 @@ serviceHttp.ues(localStorageService.get(token))
         }
       });
     }
-    /*Object.keys($scope.formModel.responses).forEach(function(key,index) {
-      if($scope.formModel.responses[key] == true){
-        i = i+1;
-      }
 
-    });*/
-    //console.log(i);
-    //i = 0;
     if(i>0)
       $scope.checked = false;
     else
       $scope.checked = true;
-    //console.log($scope.formModel.responses);
   };
+  //======================== Fin traitement
 
   $log.info($stateParams);
   $scope.numero = $stateParams.questionId;
 
 
-
-  /*$scope.nextQuestion = function($index){
-    //alert($index);
-    //$scope.current = $index;
-
-    /*
-    * Faire ici le traitement de chaque réponse
-    * */
-    /*$ionicSlideBoxDelegate.slide($index);
-    $scope.checked=true;
-  }*/
-
+  // Lors de la validation des réponses de l'utilisateur
   $scope.validerQuestion = function() {
     $scope.loading = true;
+    //Variable ou on stocke les réponses
     var responses ={};
+
+    //Checkbox
     if($scope.question.isCheckBox){
-      //Checkbox
-
-
-      //parcours de toutes les propositions
+      //Parcours de toutes les propositions
+      //Si une question n'est pas présente ou est fausse dans le formMedel lui mettre false
+      //Sinon lui mettre true
       $scope.question.responses.forEach(function(e){
         if((typeof $scope.formModel.responses[e.number] === 'undefined' ) || !($scope.formModel.responses[e.number]))
           $scope.formModel.responses[e.number] = "false";
@@ -306,31 +275,29 @@ serviceHttp.ues(localStorageService.get(token))
       //Clonage du formModel
       responses = Object.assign({},$scope.formModel.responses);
 
+      //On supprime la réponse "Je ne sais pas" si elle est présente
+      //dans le JSON à envoyer au serveur
       if(!(typeof responses[-1] === 'undefined')){
         delete responses[-1];
       }
 
       console.log(responses);
 
-    }else{
-      //Radio
+    }else{//Radio
 
+      //Parcours de toutes les réponses et leurs mettre false
       $scope.question.responses.forEach(function(e){
           responses[e.number] = "false";
       });
 
+      //Après mettre la bonne réponse à True si il n'a pas selectionné "Je ne sais pas"
       if($scope.formModel.response != "-1")
         responses[$scope.formModel.response] = "true";
       console.log(responses);
     }
-    console.log("AFTER");
-    console.log(responses);
-    console.log("SCOPE");
-    console.log($scope.formModel.responses);
-    serviceHttp.setResponses(localStorageService.get(token), $stateParams.questionId, responses)
 
+    serviceHttp.setResponses(localStorageService.get(token), $stateParams.questionId, responses)
       .success(function(data, status){
-        console.log(data);
         $scope.disableHistory();
         $state.go('app.seance', {seanceId:$scope.session_id});
         /*if(!($ionicHistory.viewHistory().backView == null)){
@@ -342,14 +309,8 @@ serviceHttp.ues(localStorageService.get(token))
 
       })
 
-
       .error(function (data, status){
-
-        // if(status == "401")
-        //$state.go('app.logout');
-        console.log(data);
         $scope.errorSoumissionAlert();
-        //$scope.loading = false;
       });
 
     $scope.errorSoumissionAlert = function() {
@@ -366,12 +327,10 @@ serviceHttp.ues(localStorageService.get(token))
         $state.go('app.seance', {seanceId:$scope.session_id});
       });
     };
-    //console.log($scope.formModel);
-    //$state.go('app.resultats');
-
   };
 })
 
+  //Récuperation de la liste des séances d'une UE
   .controller ('UeCtrl', function($scope, $state, $stateParams,serviceHttp, localStorageService){
 
     if(localStorageService.get(token)== null) {
@@ -381,33 +340,22 @@ serviceHttp.ues(localStorageService.get(token))
     $scope.loading = true;
 
     serviceHttp.sessions(localStorageService.get(token), $stateParams.ueId)
-
       .success(function(data, status){
         console.log(data.ue.sessions);
         $scope.data = data.ue.sessions;
         $scope.loading = false;
       })
-
-
       .error(function (data, status){
-
-        // if(status == "401")
         $state.go('app.logout');
-        console.log(data);
-        //$scope.showAlert();
-        //$scope.loading = false;
       });
-
-
-
 })
 
+  //Récuperation de la liste des questions d'une séance
   .controller ('SeanceCtrl', function($scope, $state, $stateParams, $ionicHistory, serviceHttp, localStorageService){
 
     if(localStorageService.get(token)== null) {
       $state.go('app.login');
     }
-
     $scope.loading = true;
 
     serviceHttp.questions(localStorageService.get(token), $stateParams.seanceId)
@@ -417,19 +365,13 @@ serviceHttp.ues(localStorageService.get(token))
         $scope.data = data.session.questions;
         $scope.loading = false;
       })
-
-
       .error(function (data, status){
-
-        // if(status == "401")
         $state.go('app.logout');
-        console.log(data);
-        //$scope.showAlert();
-        //$scope.loading = false;
       });
 
   })
 
+  //Controlleur de login
   .controller('LoginCtrl', function($scope, $state, $ionicSideMenuDelegate, $ionicHistory, $timeout, $ionicPopup,
                                     localStorageService, serviceHttp) {
 
@@ -439,99 +381,76 @@ serviceHttp.ues(localStorageService.get(token))
     $ionicHistory.nextViewOptions({
       disableBack: true
     }); // Desactiver le bouton back vers la page login
+
     $ionicSideMenuDelegate.canDragContent(false); //Desactiver le slide menu gauche
-    //$state.go('app.search');
 
-
-    // Perform the login action when the user submits the login form
-
-      // Simulate a login delay. Remove this and replace with your login
-      // code if using a login system
-
-
-    // An alert dialog
+    //Un alerte si y a une erreur de connexion
     $scope.showAlert = function() {
       var alertPopup = $ionicPopup.alert({
         title: 'Problème !',
         template: 'Erreur de connexion !'
       });
     };
-
     $scope.loading = false;
+
     $scope.doLogin = function() {
-      //$log.info('Doing login', $scope.loginData);
-
-      //console.log($scope.loginData.username);
-
-
-
       $scope.loading = true;
-
 
       serviceHttp.login($scope.loginData.username, $scope.loginData.password)
 
 
       .success(function(data, status){
+        $scope.loading = false;
         if(status=='200'){
-          console.log(status);
-          $scope.loading = false;
-          console.log(data);
+          //On enregistre le token dans le localStorage
           localStorageService.set(token, data.token);
+          //On redirige vers la liste des UE's
           $state.go('app.ues');
         }else{
-          console.log(data);
-          console.log(status);
           $scope.showAlert();
-          $scope.loading = false;
         }
 
       })
-
-
       .error(function (data, status){
-
-        console.log(data);
         $scope.showAlert();
         $scope.loading = false;
       });
 
-      //loginService.logIn('mouuuuuuu');
-
-
-      /*$timeout(function() {
-        $scope.showAlert();
-        $scope.loading = false;
-      }, 2000);*/
     };
 
 
  })
   .controller('LogoutCtrl', function($scope, $state, localStorageService){
 
+    //On supprime le token
     localStorageService.clearAll(token);
-    /*
-      Do not forget to send à http request to kill a token in the server after logout.
-     */
+
+    //On redirige vers la page de login
     $state.go('app.login');
 
   })
 
+  //Affichage des statistiques
   .controller('StatsCtrl', function($scope, $stateParams, localStorageService, serviceHttp){
 
     $scope.loading = true;
     var cols = [];
     var rows = [];
     $scope.myChartObject = {};
+
+    //Récuperation des statistiques
     serviceHttp.getStats(localStorageService.get(token), $stateParams.questionId)
 
+
       .success(function(data, status){
+
+        //Voir si c'est un enseignant
         serviceHttp.getRoles(localStorageService.get(token))
           .success(function(data, status){
             if(data.role.pivot.role_id == "2"){
               $scope.enseignant = true;
             }
           });
-        console.log(data);
         $scope.question = {
           id: data.question.id,
           title : data.question.title,
@@ -539,10 +458,12 @@ serviceHttp.ues(localStorageService.get(token))
           propositions : data.question.propositions
         };
 
+        //On construit le graphe
         cols.push({id:"t", label: data.question.title, type: "string"});
         cols.push({id:"s", label: "Tour 1", type: "number"});
         //cols.push({id:"s", label: "Tour 2", type: "number"});
 
+        //On ajoute les stats sur le graphe
         data.question.propositions.forEach(function (e) {
           if(e.number == "0"){
             rows.push({
@@ -570,14 +491,7 @@ serviceHttp.ues(localStorageService.get(token))
         };
         $scope.loading = false;
       })
-
-
       .error(function (data, status){
-
-        // if(status == "401")
         $state.go('app.logout');
-        console.log(data);
-        //$scope.showAlert();
-        //$scope.loading = false;
       });
   });
